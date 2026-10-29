@@ -2,33 +2,33 @@ org 0x7C00
 use16
 
 boot:
-    cli                     ; Kesmeleri kapat
-    xor ax, ax              ; Segmentleri sıfırla
+    cli                   
+    xor ax, ax             
     mov ds, ax
     mov es, ax
     mov ss, ax
-    mov sp, 0x7C00          ; Yığın adresini ayarla
+    mov sp, 0x7C00          
 
  call enable_a20
     ; Amaç: Kernel'i diskten belleğe yüklemek
-    mov ah, 0x02            ; Disk okuma fonksiyonu
-    mov al, 2               ; Okunacak sektör sayısı
-    mov ch, 0               ; Silindir 0
-    mov dh, 0               ; Kafa 0
-    mov cl, 2               ; Sektör 2
+    mov ah, 0x02            
+    mov al, 2               
+    mov ch, 0               
+    mov dh, 0               
+    mov cl, 2              
     
-    mov bx, 0x1000          ; Kernel'in yükleneceği adres (0x1000:0x0000)
+    mov bx, 0x1000          
     mov es, bx
     xor bx, bx
     
-    int 0x13                ; Disk kesmesini çağır
-    jc disk_hata            ; Hata varsa atla
+    int 0x13                
+    jc disk_hata           
 
-    ; Amaç: 32-bit Korumalı Moda geçiş yapmak
-    lgdt [gdt_descriptor]   ; GDT tablosunu yükle
+    ; 32 bite gec
+    lgdt [gdt_descriptor]   ; tabloyu yukle
 
     mov eax, cr0
-    or eax, 1               ; Korumalı mod bitini aç
+    or eax, 1              ; Protected mode bitini ac
     mov cr0, eax
 
  
@@ -43,7 +43,7 @@ disk_hata:
     jmp $
 
 yazdir_metin:
-    mov ah, 0x0E          ; BIOS teletype fonksiyonu
+    mov ah, 0x0E          
 .dongu:
     lodsb                 
     test al, al           
@@ -55,11 +55,11 @@ yazdir_metin:
 
 hata_mesaji db 13, 10, "[ FATAL ERROR: DISK READ MELTDOWN - 0xA0 ]", 13, 10, "WWW.HANMECH.COM.TR", 13, 10, 0
 kernel_pointer:
-    dd 0x10000      ; 4 baytlık 32-bit offset
-    dw 0x08         ; 2 baytlık segment seçici (selector)
+    dd 0x10000      
+    dw 0x08        
 
 
-; Amaç: Bellek segment sınırlarını tanımlamak
+
 gdt_start:
     dq 0                    ; Null descriptor
 
